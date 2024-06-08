@@ -9,3 +9,10 @@ class Amenities(BaseModel):
         self.bathrooms = bathrooms
         self.Wifi = Wifi
         self.pools = pools
+        self.places = []#Place one-to-many relation
+
+    def add_place(self, place):
+        self.places.append(place)
+
+    def remove_place(self, place):
+        self.places.remove(place)
