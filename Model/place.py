@@ -12,4 +12,4 @@ class Place(BaseModel):
         self.host = None
         self.price_per_night = price_per_night
         self.max_guests = max_guests
-        self.amenities = []
+        self.amenities = [] #one-to-many relation with
