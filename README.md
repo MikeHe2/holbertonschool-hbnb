@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # HbnB Evolution Project
 ## Model + API
 
@@ -163,6 +162,3 @@ Objectives
 **Environment Variables:** Use environment variables to manage configurations like the application port.
 
 **Persistent Volume:** Configure a Docker volume that will be used to store and persist application data.
-=======
-# holbertonschool-hbnb
->>>>>>> ca98cf5d141522e4e2f0e499833a36c0dd35f0a9
