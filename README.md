@@ -51,6 +51,8 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ __ _
 
 **As you design and implement these features, remember that our application will grow. The choices you make now should allow for easy additions and changes later, especially when we switch from file-based to database storage.**
 
+***
+
  **In our pursuit of creating a robust and efficient application, it’s crucial that every entity in our data model, except for Country includes the following attributes.:**
 
 `Unique ID (UUID4):` Every object - whether it’s a Place, User, Review, Amenity or City - must have a unique identifier. This ID should be generated using UUID4 to ensure global uniqueness. This is critical for identifying and managing entities across our application consistently.
