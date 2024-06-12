@@ -81,4 +81,4 @@ def delete_city(city_id):
     if city is None:
         return jsonify({'error': 'City not found'}), 404
     city.delete()
-    return jsonify({'message': 'City deleted'}), 200
+    return jsonify({'message': 'City deleted'}), 204
