@@ -1,6 +1,5 @@
 from .basemodel import BaseModel
 
-
 """
 This import statement allows access to the BaseModel class
 defined in the basemodel.py
@@ -14,7 +13,7 @@ class Place(BaseModel):
     Represents a place in the application.
     """
 
-    def __init__(self, id, updated_at, name, place, description, address,
+    def __init__(self, id, created_at, updated_at, name, description, address,
                  latitude, longitude, host, price_per_night, max_guests):
         """
         Initializes a new instance of the Place class.
@@ -34,9 +33,8 @@ class Place(BaseModel):
             max_guests (int): The maximum number of guests
             allowed in the place.
         """
-        super().__init__(id, updated_at)
+        super().__init__(id, created_at, updated_at)
         self.name = name
-        self.place = place
         self.description = description
         self.address = address
         self.latitude = latitude
@@ -97,6 +95,7 @@ class Place(BaseModel):
         self.host = new_host
 
     def delete(self):
+
         """
         Deletes the place by setting the host to None.
         """

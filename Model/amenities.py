@@ -13,7 +13,7 @@ class Amenities(BaseModel):
     Represents amenities for a place.
     """
 
-    def __init__(self, id, number_of_rooms, bathrooms, Wifi, pools):
+    def __init__(self, id, number_of_rooms, number_of_bathrooms, Wifi, pools):
         """
         Initializes a new instance of the Amenities class.
 
@@ -26,7 +26,7 @@ class Amenities(BaseModel):
         """
         super().__init__(id)
         self.number_of_rooms = number_of_rooms
-        self.bathrooms = bathrooms
+        self.number_of_bathrooms = number_of_bathrooms
         self.Wifi = Wifi
         self.pools = pools
         self.places = []  # Place one-to-many relation

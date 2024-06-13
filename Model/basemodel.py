@@ -13,7 +13,7 @@ class BaseModel:
     A base model class representing a generic model.
     """
 
-    def __init__(self, created_at, updated_at):
+    def __init__(self, created_at, updated_at, any_argument):
         """
         Initializes a new instance of the BaseModel class.
 
@@ -24,6 +24,7 @@ class BaseModel:
         self.id = uuid.uuid4()
         self.created_at = created_at if created_at else datetime.now()
         self.updated_at = updated_at if updated_at else datetime.now()
+        self.any_argument = any_argument
 
     def save(self):
         """

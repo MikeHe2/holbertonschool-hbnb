@@ -22,7 +22,7 @@ class Reviews(BaseModel):
         feedback (str): The feedback provided for the place.
     """
 
-    def __init__(self, id, updated_at, place, rating, feedback):
+    def __init__(self, id, created_at, updated_at, place, rating, comment):
         """
         Initializes a new instance of the Reviews class.
 
@@ -34,10 +34,10 @@ class Reviews(BaseModel):
             rating (int): The rating given to the place (from 1 to 5).
             feedback (str): The feedback provided for the place.
         """
-        super().__init__(id, updated_at)
+        super().__init__(id, created_at, updated_at)
         self.place = place
         self.rating = rating
-        self.feedback = feedback
+        self.comment = comment
 
     def add_rating(self, rating):
         """

@@ -1,10 +1,10 @@
+#!/usr/bin/python3
 import unittest
 from datetime import datetime
 from Model.basemodel import BaseModel
 from Model.place import Place
 from Model.users import Users
 from Model.reviews import Reviews
-
 
 """
 This imports unittest  providing the TestCase class and testing utilities,
@@ -25,8 +25,11 @@ class TestModel(unittest.TestCase):
         """Test consistency checks."""
         Users.users = []
         updated_at = datetime.now()
-        user = Users(id=1, updated_at=updated_at, email="user@email.com",
-                     password="password",
+        created_at = datetime.now()
+        user = Users(id=1, updated_at=updated_at, created_at=created_at,
+                     host_id="Owner", place_id="Owned place",
+                     review="Great place to stay!",
+                     email="user@email.com",
                      first_name="Nelly", last_name="Sierra")
         self.assertIsNotNone(user.created_at)
         self.assertIsNotNone(user.updated_at)
@@ -36,16 +39,20 @@ class TestModel(unittest.TestCase):
         """Test relationship integrity."""
         Users.users = []
         updated_at = datetime.now()
-        user = Users(id=1, updated_at=updated_at, email="user@email.com",
-                     password="password", first_name="Michael",
+        created_at = datetime.now()
+        user = Users(id=1, created_at=created_at, updated_at=updated_at,
+                     host_id="Owner", place_id="Owned place",
+                     review="Great place to stay!", email="user@email.com",
+                     first_name="Michael",
                      last_name="Hernandez")
-        place = Place(id=1, updated_at=updated_at, place=None,
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
                       name="Place Test", description="Test description",
                       address="420 Test street",
                       latitude=48.8584, longitude=2.3370, host=user,
                       price_per_night=100, max_guests=6)
-        review = Reviews(id=1, updated_at=updated_at, place=place,
-                         rating=5, feedback="Amazing experience!")
+        review = Reviews(id=1, created_at=created_at, updated_at=updated_at,
+                         place=place,
+                         rating=5, comment="Amazing experience!")
         self.assertEqual(place.host, user)
         self.assertEqual(review.place, place)
 
@@ -53,27 +60,39 @@ class TestModel(unittest.TestCase):
     def test_business_rule_enforcement(self):
         """Test business rule enforcement."""
         updated_at = datetime.now()
-        user1 = Users(id=1, updated_at=updated_at, email="user@email.com",
-                      password="password", first_name="Nelly",
-                      last_name="Sierra")
+        created_at = datetime.now()
+        user1 = Users(id=1, updated_at=updated_at, created_at=created_at,
+                      host_id="Owner", place_id="Owned place",
+                      review="Great place to stay!", email="user@email.com",
+                      first_name="Saul",
+                      last_name="Vera")
         with self.assertRaises(ValueError):
-            user2 = Users(id=2, updated_at=updated_at,
-                          email=user1.email, password="password",
+            user2 = Users(id=2, created_at=created_at, updated_at=updated_at,
+                          host_id="Owner", place_id="Owned place",
+                          review="Great place to stay!",
+                          email=user1.email,
                           first_name="Jesse", last_name="Pinkman")
 
         # Test user uniqueness
         with self.assertRaises(ValueError):
-            user3 = Users(id=3, updated_at=updated_at, email=user1.email,
-                          password="password", first_name="Mike",
+            user3 = Users(id=3, created_at=created_at, updated_at=updated_at,
+                          host_id="Owner", place_id="Owned place",
+                          review="Great place to stay!",
+                          email=user1.email,
+                          first_name="Mike",
                           last_name="Ehrmantraut")
 
     # User creation validation
     def test_user_creation_validation(self):
         """Test user creation validation."""
+        created_at = datetime.now
         updated_at = datetime.now()
         with self.assertRaises(ValueError):
-            user = Users(id=1, updated_at=updated_at, email="invalid_email",
-                         password="password", first_name="Lalo",
+            user = Users(id=1, created_at=created_at, updated_at=updated_at,
+                         host_id="Owner", place_id="Owned place",
+                         review="Great place to stay!",
+                         email="invalid_email",
+                         first_name="Lalo",
                          last_name="Salamanca")
 
     # Unique email constraint
@@ -81,14 +100,21 @@ class TestModel(unittest.TestCase):
         """Test unique email constraint."""
         Users.users = []
         updated_at = datetime.now()
-        user1 = Users(id=1, updated_at=updated_at, email="user@email.com",
-                      password="password", first_name="Kim",
+        created_at = datetime.now()
+        user1 = Users(id=1, updated_at=updated_at, created_at=created_at,
+                      host_id="Owner", place_id="Owned place",
+                      review="Great place to stay!",
+                      email="user@email.com",
+                      first_name="Kim",
                       last_name="Wexler")
         print("User 1 created with email:", user1.email)
         print("Existing users:", [user.email for user in Users.users])
         try:
-            user2 = Users(id=2, updated_at=updated_at, email=user1.email,
-                          password="password", first_name="Hank",
+            user2 = Users(id=2, created_at=created_at, updated_at=updated_at,
+                          host_id="Owner", place_id="Owned place",
+                          review="Great place to stay!",
+                          email=user1.email,
+                          first_name="Hank",
                           last_name="Schrader")
         except ValueError as e:
             print("Caught ValueError:", e)
@@ -99,9 +125,13 @@ class TestModel(unittest.TestCase):
     def test_update_mechanism(self):
         """Test update mechanism."""
         Users.users = []
+        created_at = datetime.now()
         updated_at = datetime.now()
-        user = Users(id=1, updated_at=updated_at, email="user@email.com",
-                     password="password", first_name="Nacho",
+        user = Users(id=1, created_at=created_at, updated_at=updated_at,
+                     host_id="Owner", place_id="Owned place",
+                     review="Great place to stay!",
+                     email="user@email.com",
+                     first_name="Nacho",
                      last_name="Varga")
         user.first_name = "Nacho"
         self.assertEqual(user.first_name, "Nacho")
@@ -110,7 +140,8 @@ class TestModel(unittest.TestCase):
     def test_place_instantiation(self):
         """Test place instantiation."""
         updated_at = datetime.now()
-        place = Place(id=1, updated_at=updated_at, place=None,
+        created_at = datetime.now()
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
                       name="Place test", description="Test description",
                       address="420 Test street",
                       latitude=48.8584, longitude=2.3370, host=None,
@@ -120,14 +151,22 @@ class TestModel(unittest.TestCase):
     def test_host_assignment_rules(self):
         """Test host assignment rules."""
         updated_at = datetime.now()
-        user1 = Users(id=1, updated_at=updated_at, email="user#1@email.com",
-                      password="password", first_name="Gus",
+        created_at = datetime.now()
+        user1 = Users(id=1, created_at=created_at, updated_at=updated_at,
+                      host_id="Owner", place_id="Owned place",
+                      review="Great place to stay!",
+                      email="user#1@email.com",
+                      first_name="Gus",
                       last_name="Fring")
-        user2 = Users(id=2, updated_at=updated_at, email="user#2@email.com",
-                      password="password", first_name="Chuck",
+        user2 = Users(id=2, created_at=created_at, updated_at=updated_at,
+                      host_id="Owner", place_id="Owned place",
+                      review="Great place to stay!",
+                      email="user#2@email.com",
+                      first_name="Chuck",
                       last_name="McGill")
-        place = Place(id=1, updated_at=updated_at, name="Place test",
-                      place=None, description="Test description",
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
+                      name="Place test",
+                      description="Test description",
                       address="420 Test street",
                       latitude=48.8584, longitude=2.3370, host=user1,
                       price_per_night=100, max_guests=6)
@@ -140,7 +179,8 @@ class TestModel(unittest.TestCase):
     def test_place_attribute_validation(self):
         """Test place attribute validation."""
         updated_at = datetime.now()
-        place = Place(id=1, updated_at=updated_at, place=None,
+        created_at = datetime.now()
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
                       name="Place test", description="Test description",
                       address="420 Test street", latitude=48.8584,
                       longitude=2.3370, host=None, price_per_night=100,
@@ -155,11 +195,16 @@ class TestModel(unittest.TestCase):
         """Test deleting places."""
         Users.users = []
         updated_at = datetime.now()
-        user = Users(id=1, updated_at=updated_at, email="user@email.com",
-                     password="password", first_name="Jimmy",
+        created_at = datetime.now()
+        user = Users(id=1, created_at=created_at, updated_at=updated_at,
+                     host_id="Owner", place_id="Owned place",
+                     review="Great place to stay!",
+                     email="user@email.com",
+                     first_name="Jimmy",
                      last_name="McGill")
-        place = Place(id=1, updated_at=updated_at, name="Place test",
-                      place=None, description="Test description",
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
+                      name="Place test",
+                      description="Test description",
                       address="420 Test street",
                       latitude=48.8584, longitude=2.3370, host=user,
                       price_per_night=100, max_guests=6)
@@ -169,8 +214,9 @@ class TestModel(unittest.TestCase):
     # Amenity addition
     def test_amenity_addition(self):
         """Test amenity addition."""
+        created_at = datetime.now()
         updated_at = datetime.now()
-        place = Place(id=1, updated_at=updated_at, place=None,
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
                       name="Place test",
                       description="Test description",
                       address="420 Test street",
@@ -184,7 +230,8 @@ class TestModel(unittest.TestCase):
     def test_retrieve_and_update_amenities(self):
         """Test retrieve and update amenities."""
         updated_at = datetime.now()
-        place = Place(id=1, updated_at=updated_at, place=None,
+        created_at = datetime.now()
+        place = Place(id=1, created_at=created_at, updated_at=updated_at,
                       name="Place test", description="Test description",
                       address="420 Test street",
                       latitude=48.8584, longitude=2.3370, host=None,
@@ -192,6 +239,29 @@ class TestModel(unittest.TestCase):
         place.add_amenity("Wi-Fi")
         place.update_amenity("Wi-Fi", "High-speed Wi-Fi")
         self.assertIn("High-speed Wi-Fi", place.amenities)
+
+    def test_not_own_review(self):
+        """Test that a place owner cannot review their own place."""
+        # Create a user who is also a host
+        updated_at = datetime.now()
+        created_at = datetime.now()
+        host_id = 1
+        place_id = 1
+        host = Users(id=host_id, created_at=created_at, updated_at=updated_at,
+                     host_id="Owner", place_id="Owned place",
+                     review="Great place to stay!", email="owner@email.com",
+                     first_name="Host", last_name="Owner")
+        place = Place(id=place_id, created_at=created_at,
+                      updated_at=updated_at,
+                      name="Place test", description="Test description",
+                      address="420 Test street",
+                      latitude=48.8584, longitude=2.3370, price_per_night=100,
+                      max_guests=6, host=host)
+
+        # Attempt to review own place
+        review_text = "Great place to stay!"
+        with self.assertRaises(ValueError):
+            host.not_own_review(host_id, place_id, review_text)
 
 
 if __name__ == '__main__':

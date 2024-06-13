@@ -19,7 +19,7 @@ class City(BaseModel):
         area_code (str): The area code of the city.
     """
 
-    def __init__(self, id, name, area_code):
+    def __init__(self, id, name, country_code):
         """
         Initializes a new instance of the City class.
 
@@ -30,9 +30,9 @@ class City(BaseModel):
         """
         super().__init__(id)
         self.name = name
-        self.area_code = area_code
+        self.country_code = country_code
 
-    def zip_code(self, area_code):
+    def zip_code(self, country_code):
         """
         Checks if the given area code is numeric.
 
@@ -45,7 +45,7 @@ class City(BaseModel):
         Raises:
             ValueError: If the area code is not numeric.
         """
-        if area_code.isnumeric():
+        if country_code.isnumeric():
             return True
         else:
             raise ValueError("Area code must be in numbers")

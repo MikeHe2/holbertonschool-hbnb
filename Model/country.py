@@ -17,5 +17,11 @@ class Country:
         name (str): The name of the country.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, code):
         self.name = name
+        self.code = code
+
+        if code.isnumeric():
+            return True
+        else:
+            raise ValueError("Area code must be in numbers")
