@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from .models import Amenity  # from Main Model module
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager
+from ..Model import Amenities # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager
 
 
 amenity_controller = Blueprint('amenity_controller')
