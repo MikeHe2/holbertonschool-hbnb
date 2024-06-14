@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from .models import Place  # from Main Model module
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager
+from ..Model import Place  # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager
 
 
 place_controller = Blueprint('place_controller', __name__)
@@ -10,7 +10,7 @@ place_controller = Blueprint('place_controller', __name__)
 @place_controller.route('places', methods=['POST'])
 def post_place():
     data = request.get_json()
-    place = Place(name=date['name'])
+    place = Place(name=data['name'])
     return jsonify(place.to_dict()), 201
 
 
