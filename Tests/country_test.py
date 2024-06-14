@@ -1,8 +1,8 @@
-from ..Model.basemodel import BaseModel
-from .Model.basemodel import Country
+from Model.basemodel import BaseModel
+from Model.basemodel import Country
 import json
 import unittest
-from country_controller import app
+import app
 
 
 class CountryControllerTestCase(unittest.TestCase):
