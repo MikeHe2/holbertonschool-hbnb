@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager  # from Main Model module
+from Persistence import IPersistence
+from Persistence.data_manager import DataManager  # from Main Model module
 from datetime import datetime
-from Model.City import City
-from Model.Country import Country
+from Model.city import City
+from Model.country import Country
 
 
 country_city_controller = Blueprint('country_city_controller', __name__)

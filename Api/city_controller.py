@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from .models import City  # from Main Model module
+from Model import city  # from Main Model module
 
 app = Flask(__name__)
 

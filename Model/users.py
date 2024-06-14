@@ -50,7 +50,7 @@ class Users(BaseModel):
             raise ValueError("This email is already registered")
         return True
 
-    def __init__(self, id, updated_at, email, password, first_name, last_name):
+    def __init__(self, email, first_name, last_name):
         """
         Initializes a new user instance.
 
@@ -62,10 +62,9 @@ class Users(BaseModel):
             first_name (str): The user's first name.
             last_name (str): The user's last name.
         """
-        super().__init__(id, updated_at)
-        Users.verify_email(email)
+        super().__init__()
+        '''Users.verify_email(email)'''
         self.email = email
-        self.password = password
         self.first_name = first_name
         self.last_name = last_name
         self.places = []  # Place one-to-many relation

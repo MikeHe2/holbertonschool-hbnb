@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager  # from Main Model module
+from Persistence.IPersistence import IPersistenceManager
+from Persistence.data_manager import DataManager  # from Main Model module
 from datetime import datetime
+from Model.users import Users
 
 
 user_controller = Blueprint('user_controller', __name__)
@@ -22,19 +23,20 @@ def post_user():
     if '@' not in email:  # Simple email validation
         return jsonify({'error': 'Invalid email format'}), 400
 
-    if data.get_user_by_email(email):
-        return jsonify({'error': 'Email already exists'}), 409
+    '''if data.get_user_by_email(email):
+        return jsonify({'error': 'Email already exists'}), 409'''
 
-    now = datetime()
+    '''now = datetime()
     user = {
             'email': email,
             'first_name': first_name,
             'last_name': last_name,
             'created_at': now,
             'updated_at': now
-            }
-    new_user = data.post_user(user)
-    return jsonify(new_user.__dict__), 201  # return response
+            }'''
+    user = Users(email, first_name, last_name)
+    #  new_user = data.post_user(user)
+    return jsonify(user.__dict__), 201  # return response
 
 
 @user_controller.route('/users/<user_id>', methods=['GET'])

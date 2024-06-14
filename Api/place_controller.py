@@ -1,20 +1,20 @@
 from flask import Blueprint, request, jsonify
-from .models import Place  # from Main Model module
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager
+from Model import place  # from Main Model module
+from Persistence import IPersistence
+from Persistence.data_manager import DataManager
 
 
 place_controller = Blueprint('place_controller', __name__)
 
 
-@place_controller.route('places', methods=['POST'])
+@place_controller.route('/places', methods=['POST'])
 def post_place():
     data = request.get_json()
     place = Place(name=date['name'])
     return jsonify(place.to_dict()), 201
 
 
-@place_controller.route('places/<place_id>', methods=['GET'])
+@place_controller.route('/places/<place_id>', methods=['GET'])
 def get_place(place_id):
     place = Place.query.get(place_id)
     if place is None:
