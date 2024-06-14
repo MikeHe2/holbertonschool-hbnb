@@ -1,22 +1,48 @@
-from flask import Flask, request, jsonify
-from .models import Review  # from Main Model module
+from flask import Blueprint, request, jsonify
+from ..Model import Reviews  # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager
 
-app = Flask(__name__)
+
+review_controller = Blueprint('review_controller', __name__)
 
 
-@app.route('/review', methods=['POST'])
+@review_controller.route('/reviews', methods=['POST'])
 def post_review():
     data = request.get_json()
-    review = Review(data['id'], data['name'], data['description'])
-    # save the review to the database
-    # print review for now
-    print(review)
-    return jsonify(review.__dict__), 201  # return response
+    review = Reviews(content=data['content'])
+    return jsonify(review.to_dict()), 201
 
 
-@app.route('/reviews/<review_id>', methods=['GET'])
+@review_controller.route('/reviews', methods=['GET'])
+def get_reviews():
+    reviews = Reviews.query.all()
+    return jsonify([review.to_dict() for review in reviews]), 200
+
+
+@review_controller.route('/reviews/<review_id>', methods=['GET'])
 def get_review(review_id):
-    # retrieve the review with the given id from database
-    # Return Review test for now
-    review = Review(review_id, "Review Test")
-    return jsonify(review.__dict__), 200  # return the review's data
+    review = Reviews.query.get(review_id)
+    if review is None:
+        return jsonify({"error": "Review not found"}), 404
+    return jsonify(review.to_dict()), 200
+
+
+@review_controller.route('/reviews/<review_id>', methods=['PUT'])
+def update_review(review_id):
+    data = request.get_json()
+    review = Reviews.query.get(review_id)
+    if review is None:
+        return jsonify({"error": "Review not found"}), 404
+    review.content = data.get('content', review.content)
+    review.save()
+    return jsonify(review.to_dict()), 200
+
+
+@review_controller.route('/reviews/<review_id>', methods=['DELETE'])
+def delete_review(review_id):
+    review = Reviews.query.get(review_id)
+    if review is None:
+        return jsonify({"error": "Review not found"}), 404
+    review.delete()
+    return jsonify({'message': 'Review deleted'}), 204

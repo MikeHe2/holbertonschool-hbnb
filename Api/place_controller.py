@@ -1,22 +1,42 @@
-from flask import Flask, request, jsonify
-from .models import Place  # from Main Model module
+from flask import Blueprint, request, jsonify
+from ..Model import Place  # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager
 
-app = Flask(__name__)
+
+place_controller = Blueprint('place_controller', __name__)
 
 
-@app.route('/place', methods=['POST'])
+@place_controller.route('places', methods=['POST'])
 def post_place():
     data = request.get_json()
-    place = Place(data['id'], data['name'], data['description'])
-    # save the place to the database
-    # print place for now
-    print(place)
-    return jsonify(place.__dict__), 201  # return response
+    place = Place(name=data['name'])
+    return jsonify(place.to_dict()), 201
 
 
-@app.route('/places/<place_id>', methods=['GET'])
+@place_controller.route('places/<place_id>', methods=['GET'])
 def get_place(place_id):
-    # retrieve the place with the given id from database
-    # Return Place test for now
-    place = Place(place_id, "Place Test")
-    return jsonify(place.__dict__), 200  # return the place's data
+    place = Place.query.get(place_id)
+    if place is None:
+        return jsonify({"error": "Place not found"}), 404
+    return jsonify(place.to_dict()), 200
+
+
+@place_controller.route('/places/<place_id>', methods=['PUT'])
+def update_place(place_id):
+    data = request.get_json()
+    place = Place.query.get(place_id)
+    if place is None:
+        return jsonify({"error": "Place not found"}), 404
+    place.name = data.get('name', place.name)
+    place.save()
+    return jsonify(place.to_dict()), 200
+
+
+@place_controller.route('/places/<place_id>', methods=['DELETE'])
+def delete_place(place_id):
+    place = Place.query.get(place_id)
+    if place is None:
+        return jsonify({"error": "Place not found"}), 404
+    place.delete()
+    return jsonify({'message': 'Place deleted'}), 204

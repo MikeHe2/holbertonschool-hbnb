@@ -1,22 +1,49 @@
-from flask import Flask, request, jsonify
-from .models import Amenity  # from Main Model module
+from flask import Blueprint, request, jsonify
+from ..Model import Amenities # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager
 
-app = Flask(__name__)
+
+amenity_controller = Blueprint('amenity_controller')
+data = DataManager()
 
 
-@app.route('/amenity', methods=['POST'])
+@amenity_controller.route('/amenities', methods=['POST'])
 def post_amenity():
     data = request.get_json()
-    amenity = Amenity(data['id'], data['name'], data['description'])
-    # save the amenity to the database
-    # print amenity for now
-    print(amenity)
-    return jsonify(amenity.__dict__), 201  # return response
+    amenity = Amenity(name=data['name'])
+    return jsonify(amenity.to_dict()), 201
 
 
-@app.route('/amenities/<amenity_id>', methods=['GET'])
+@amenity_controller.route('/amenities', methods=['GET'])
+def get_amenities():
+    amenities = Amenity.query.all()
+    return jsonify([amenity.to_dict() for amenity in amenities]), 200
+
+
+@amenity_controller.route('/amenities/<amenity_id>', methods=['GET'])
 def get_amenity(amenity_id):
-    # retrieve the amenity with the given id from database
-    # Return Amenity test for now
-    amenity = Amenity(amenity_id, "Amenity Test")
-    return jsonify(amenity.__dict__), 200  # return the amenitie's data
+    amenity = Amenity.query.get(amenity_id)
+    if amenity is None:
+        return jsonify({"error": "Amenity not found"}), 404
+    return jsonify(amenity.to_dict()), 200
+
+
+@amenity_controller.route('/amenities/<amenity_id>', methods=['PUT'])
+def update_amenity(amenity_id):
+    data = request.get_json()
+    amenity = Amenity.query.get(amenity_id)
+    if amenity is None:
+        return jsonify({"error": "Amenity not found"}), 404
+    amenity.name = data.get('name', amenity.name)
+    amenity.save()
+    return jsonify(amenity.to_dict()), 200
+
+
+@amenity_controller.route('/amenities/<amenity_id>', methods=['DELETE'])
+def delete_amenity(amenity_id):
+    amenity = Amenity.query.get(amenity_id)
+    if amenity is None:
+        return jsonify({"error": "Amenity not found"}), 404
+    amenity.delete()
+    return jsonify({'message': 'Amenity deleted'}), 204

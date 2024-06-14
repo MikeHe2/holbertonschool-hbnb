@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .IPersistence import IPersistenceManager
-from persistence.DataManager import DataManager  # from Main Model module
+from ..Persistence import IPersistenceManager
+from ..Persistence.data_manager import DataManager  # from Main Model module
 from datetime import datetime
 
 
