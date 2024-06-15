@@ -50,7 +50,7 @@ class DataManager(IPersistenceManager):
             data (dict): The data to be written.
         """
         with open(self.storage_file, "w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
 
     def save(self, entity):
         """
@@ -59,7 +59,8 @@ class DataManager(IPersistenceManager):
         Args:
             entity: The entity to be saved.
         """
-        data = self._load_data()
+        with open(self.storage_file, "r") as f:
+            data = json.load(f)
         entity_id = getattr(entity, "id")
         entity_type = type(entity).__name__
         if entity_type not in data:
@@ -68,7 +69,7 @@ class DataManager(IPersistenceManager):
         self._write_data(data)
         print(f"Entity {entity_type} with id {entity_id} saved.")
 
-    def get(self, entity_id, entity_type):
+    def get(self, entity_id = "", entity_type = ""):
         """
         Retrieves an entity from the storage file.
 
@@ -84,6 +85,21 @@ class DataManager(IPersistenceManager):
             return data[entity_type][str(entity_id)]
         else:
             print(f"Entity {entity_type} with id {entity_id} not found.")
+
+    def get_all(self, entity_type):
+            '''
+            Retrieve all entities of a given type from the data manager.
+
+            Args:
+                entity_type (str): The type of entity to retrieve.
+
+            Returns:
+                list: A list of entities of the given type.
+            '''
+            data = self._load_data()
+
+            if entity_type in data:
+                return data(entity_type)
 
     def update(self, entity):
         """
