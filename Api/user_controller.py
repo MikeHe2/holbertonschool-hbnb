@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
-from ..Persistence import IPersistenceManager
-from ..Persistence.data_manager import DataManager  # from Main Model module
+from Persistence.data_manager import DataManager  # from Main Model module
 from datetime import datetime
+from Model.users import User
 
 
 user_controller = Blueprint('user_controller', __name__)
-data = DataManager()
-
+data_manager = DataManager()
+users = User
 
 @user_controller.route('/user', methods=['POST'])
 def post_user():
@@ -22,74 +22,61 @@ def post_user():
     if '@' not in email:  # Simple email validation
         return jsonify({'error': 'Invalid email format'}), 400
 
-    if data.get_user_by_email(email):
+    if User.email_exists(email):
         return jsonify({'error': 'Email already exists'}), 409
 
-    now = datetime()
-    user = {
-            'email': email,
-            'first_name': first_name,
-            'last_name': last_name,
-            'created_at': now,
-            'updated_at': now
-            }
-    new_user = data.post_user(user)
-    return jsonify(new_user.__dict__), 201  # return response
+    user = User(email=email, first_name=first_name, last_name=last_name)
+    data_manager.save(user)
+    return jsonify(user.__dict__), 201
 
 
-@user_controller.route('/users/<user_id>', methods=['GET'])
-def get_user(user_id):
-    """Gets user id"""
-    user = data.get_user_by_id(user_id)
-    if user is None:
-        return jsonify({'error': 'User not found'}), 404
-    return jsonify(user.__dict__), 200  # return the user's data
-
-
-@user_controller.route('/users', methods=['GET'])
+@user_controller.route('/user', methods=['GET'])
 def get_users():
     """Gets all users list"""
-    users = data.get_all_users()
-    if users is None:
-        return jsonify({'error': 'No users found'}), 404
-    return jsonify(
-        [user.__dict__ for user in users]), 200  # return all users' data
+    users = data_manager.get_all('User')
+    return jsonify(users), 200
 
-
-@user_controller.route('/users/<user_id>', methods=['PUT'])
+@user_controller.route('/user/<user_id>', methods=['PUT'])
 def update_user(user_id):
-    """Update user id"""
+    """Update user by id"""
     data = request.get_json()
-    email = data.get('email')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
 
-    if not email or not first_name or not last_name:
-        return jsonify({'error': 'Missing required fields'}), 400
-
-    if '@' not in email:  # Simple email validation
-        return jsonify({'error': 'Invalid email format'}), 400
-
-    if updated_user is None:
+    # Load existing user data
+    existing_user_data = data_manager.get(user_id, 'User')
+    if not existing_user_data:
         return jsonify({'error': 'User not found'}), 404
 
-    now = datetime()
-    updated_user = {
-        'email': email,
-        'first_name': first_name,
-        'last_name': last_name,
-        'created_at': now,
-        'updated_at': now
-        }
-    updated_user = data.update_user(user_id, updated_user)
+    # Check if email is provided and validate it
+    email = data.get('email')
+    if email:
+        if '@' not in email:  # Simple email validation
+            return jsonify({'error': 'Invalid email format'}), 400
+        if email != existing_user_data['email'] and User.email_exists(email):
+            return jsonify({'error': 'Email already exists'}), 409
 
-    return jsonify(updated_user.__dict__), 200  # return response
+    # Update user data
+    existing_user_data['email'] = email or existing_user_data['email']
+    existing_user_data['first_name'] = data.get('first_name', existing_user_data['first_name'])
+    existing_user_data['last_name'] = data.get('last_name', existing_user_data['last_name'])
+
+    # Create and update user without using **kwargs
+    updated_user = User(
+        email=existing_user_data['email'],
+        first_name=existing_user_data['first_name'],
+        last_name=existing_user_data['last_name']
+    )
+    updated_user.id = user_id  # Ensure the ID remains the same
+    data_manager.update(updated_user)
+
+    return jsonify(updated_user.__dict__), 200
 
 
-@user_controller.route('/users/<user_id>', methods=['DELETE'])
+
+@user_controller.route('/user/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Deletes user id"""
-    user = data.delete_user_by_id(user_id)
+    user = data_manager.get(entity_id=user_id, entity_type='User')
     if user is None:
-        return jsonify({'error': 'User not found'}), 404
-    return jsonify({'message': 'User deleted successfully'}), 200
+        return jsonify({"error": "user not found"}), 404
+    data_manager.delete(entity_id=user_id, entity_type='User')
+    return jsonify({'message': 'User deleted'}), 204

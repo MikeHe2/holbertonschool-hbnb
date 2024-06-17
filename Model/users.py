@@ -1,5 +1,5 @@
 from .basemodel import BaseModel
-
+from Persistence.data_manager import DataManager
 
 """
 This import statement allows access to the BaseModel class
@@ -9,49 +9,13 @@ filelocated in the same directory as the current Python script or module.
 """
 
 
-class Users(BaseModel):
+class User(BaseModel):
     """
     Represents a user in the system.
     """
-
     users = []
 
-    @staticmethod
-    def populate_user(user_instance):
-        """
-        Adds a user instance to the list of users.
-
-        Args:
-            user_instance (Users): The user instance to add.
-        """
-        if user_instance not in Users.users:
-            Users.users.append(user_instance)
-
-    @staticmethod
-    def verify_email(email):
-        """
-        Verifies if an email is valid and not already registered.
-
-        Args:
-            email (str): The email to verify.
-
-        Returns:
-            bool: True if the email is valid and not already registered.
-
-        Raises:
-            ValueError: If the email is in an invalid format
-            or already registered.
-        """
-        print("Verifying email:", email)
-        print("Existing user emails:", [user.email for user in Users.users])
-        if "@" not in email or "." not in email:
-            raise ValueError("Invalid email format")
-        if any(user.email == email for user in Users.users):
-            raise ValueError("This email is already registered")
-        return True
-
-    def __init__(self, id, created_at, updated_at, email, first_name,
-                 last_name, host_id, place_id, review):
+    def __init__(self, email, first_name, last_name):
         """
         Initializes a new user instance.
 
@@ -63,16 +27,33 @@ class Users(BaseModel):
             first_name (str): The user's first name.
             last_name (str): The user's last name.
         """
-        super().__init__(id, created_at, updated_at)
-        Users.verify_email(email)
+        super().__init__()
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
-        self.places = []  # Place one-to-many relation
-        Users.populate_user(self)
-        self.host_id = host_id
-        self.place_id = place_id
-        self.review = review
+        User.populate_user(self)
+
+    @staticmethod
+    def populate_user(user_instance):
+        """
+        Adds a user instance to the list of users.
+
+        Args:
+            user_instance (Users): The user instance to add.
+        """
+        if user_instance not in User.users:
+            User.users.append(user_instance)
+
+
+    @staticmethod
+    def email_exists(email):
+        """
+        Checks if an email is already registered.
+        """
+        data_manager = DataManager()  # Crear una instancia de DataManager
+        all_users = data_manager.get_all('User')  # Obtener todos los usuarios
+        return any(user['email'] == email for user in all_users)
+
 
     def not_own_review(self, host_id, place_id, review):
         self.host_id = host_id

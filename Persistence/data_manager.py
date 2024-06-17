@@ -87,19 +87,19 @@ class DataManager(IPersistenceManager):
             print(f"Entity {entity_type} with id {entity_id} not found.")
 
     def get_all(self, entity_type):
-            '''
-            Retrieve all entities of a given type from the data manager.
+        """
+        Retrieve all entities of a given type from the data manager.
 
-            Args:
-                entity_type (str): The type of entity to retrieve.
+        Args:
+            entity_type (str): The type of entity to retrieve.
 
-            Returns:
-                list: A list of entities of the given type.
-            '''
-            data = self._load_data()
-
-            if entity_type in data:
-                return data(entity_type)
+        Returns:
+            dict: A dictionary of entities of the given type.
+        """
+        data = self._load_data()
+        if entity_type in data:
+            return list(data[entity_type].values())  # Convertimos a lista de valores
+        return []
 
     def update(self, entity):
         """

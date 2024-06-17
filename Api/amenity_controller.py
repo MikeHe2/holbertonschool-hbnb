@@ -17,9 +17,8 @@ def post_amenity():
 
 @amenity_controller.route('/amenities', methods=['GET'])
 def get_amenities():
-    data = data_manager._load_data()
-    data_manager.get(entity_type=type(Amenities))
-    return jsonify(data), 200
+    users = data_manager.get_all('Amenities')
+    return jsonify(users), 200
 
 
 @amenity_controller.route('/amenities/<amenity_id>', methods=['GET'])
